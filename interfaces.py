@@ -48,6 +48,22 @@ def get_memory(self):
 def set_memory(self, agent, position, energy: float):
     """Met à jour la mémoire d'un agent"""
     
+@singledispatch
+def set_manet_agent_numbers(self, number):
+    """Met à jour le nombre d'agents dans le MANET"""
+
+@singledispatch
+def set_local_leader(self, leader):
+    """Met à jour le leader local"""
+    
+@singledispatch
+def set_global_leader(self, leader):
+    """Met à jour le leader global"""
+    
+@singledispatch
+def set_route(self, route):
+    """Met à jour la route, route étant une liste d'agents voisin à qui transmettre le message"""
+    
 
     
 # génériques d'images

@@ -34,4 +34,6 @@ class Message(Enum):
     
     CHANGE = 9 # Envoit à tout le monde le changement de mémoire due à l'execution
     
+    PING = 10 # Envoit à tout le monde un ping pour vérifier la connectivité et compter les agents
+    
     

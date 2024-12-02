@@ -45,16 +45,18 @@ def get_memory(self):
     qui est constituée de la position et de l'énergie des autres agents"""
     
 @singledispatch
-def set_memory(self, agent, value):
-    """Met à jour la mémoire d'un agent"""
+def add_memory(self, agent):
+    """Ajoute un agent à la mémoire"""
+    
+@singledispatch
+def del_memory(self, agent):
+    """Supprime un agent de la mémoire"""
+
     
 @singledispatch
 def memory_size(self):
     """Donne la taille de la mémoire d'un agent"""
     
-@singledispatch
-def del_memory(self, agent):
-    """Supprime un agent de la mémoire"""
 
 @singledispatch
 def broadcast_agents_memory_buffer(self):
@@ -77,21 +79,21 @@ def get_manet_agent_numbers(self):
     """Donne le nombre d'agents dans le MANET"""
 
 @singledispatch
-def set_local_leader(self, leader):
-    """Met à jour le leader local"""
+def set_global_leader(self, leader):
+    """Met à jour le leader global"""
     
 @singledispatch
-def local_leader_votes(self):
-    """Donne les votes pour le leader local"""
+def global_leader_votes(self):
+    """Donne les votes pour le leader global"""
 
 @singledispatch
-def add_to_local_leader_votes(self, agent, proposed_leader):
-    """Ajoute un vote pour le leader local. Renvoit un dictionnaire avec 
+def add_to_global_leader_votes(self, agent, proposed_leader):
+    """Ajoute un vote pour le leader global. Renvoit un dictionnaire avec 
     comme clef l'agent et comme valeur le leader proposé"""
     
 @singledispatch
-def local_leader(self):
-    """Donne le leader local"""
+def global_leader(self):
+    """Donne le leader global"""
 
 @singledispatch
 def excluded_agents_from_leader_list(self, leader):
@@ -106,7 +108,7 @@ def add_to_local_dependants(self, agent):
     """Ajoute un agent à la liste des dépendants locaux"""
     
 @singledispatch
-def set_global_leader(self, leader):
+def set_local_leader(self, leader):
     """Met à jour le leader global"""
     
 @singledispatch
@@ -116,6 +118,14 @@ def set_route(self, route):
 @singledispatch
 def get_route(self):
     """Donne la route, soit une liste d'agents voisin à qui transmettre le message"""
+    
+@singledispatch
+def route_predecessor(self):
+    """Le prédécésseur dans l'arbre de communication"""
+    
+@singledispatch
+def set_route_predecessor(self):
+    """Définir le prédécésseur dans l'arbre de communication"""
     
 
     

@@ -8,13 +8,13 @@ from csp_compute_route import compute_route
 @receive_and_deal_message.register
 def _(agent, message: Message.BROADCAST_STATUS):
     """Reçoit et traite les messages BROADCAST_STATUS et commence les dépendances locales"""
-    generic({ agent: [neighbors, send, set_memory, memory_size,get_memory, del_memory,  get_manet_agent_numbers, \
+    generic({ agent: [neighbors, send, add_memory, memory_size,get_memory, del_memory,  get_manet_agent_numbers, \
         add_to_broadcast_agents_memory_buffer, empty_broadcast_agents_memory_buffer, broadcast_agents_memory_buffer, \
             set_manet_agent_numbers], \
         message: [value, sender] }) # A compléter en fonction du comportement attendu pour agent
     neighbors = agent.neighbors()
     sender = message.sender()
-    set_memory(agent, sender, value(message))
+    add_memory(agent, sender)
     set_manet_agent_numbers(agent, len(get_memory(agent).keys()))
     add_to_broadcast_agents_memory_buffer(agent, sender)
     if len(broadcast_agents_memory_buffer(agent)) >= memory_size(agent)*2/3: # 2/3 des agents en mémoire
@@ -78,34 +78,39 @@ def _(agent, message: Message.EXECUTE_LOCAL):
 @receive_and_deal_message.register
 def _(agent, message: Message.BROADCAST_LEADER):
     """Reçoit et traite les messages BROADCAST_LEADER"""
-    generic({ agent: [send, neighbors, set_local_leader, local_leader, set_local_leader ,local_leader_votes, \
-        add_to_local_leader_votes, get_manet_agent_numbers], message: [value, sender] })
+    generic({ agent: [send, neighbors, set_local_leader, global_leader, set_local_leader ,global_leader_votes, \
+        add_to_global_leader_votes, get_manet_agent_numbers], message: [value, sender] })
     # A compléter en fonction du comportement attendu pour agent
     sender = message.sender()
     proposed_leader = message.value()
-    if proposed_leader not in local_leader_votes(agent):
-        add_to_local_leader_votes(agent, sender, proposed_leader)
+    if proposed_leader not in global_leader_votes(agent):
+        add_to_global_leader_votes(agent, sender, proposed_leader)
         for neighbor in agent.neighbors():
             send(agent, neighbor, message)
-    if len(local_leader_votes(agent)) >= ( 4/5 )*get_manet_agent_numbers(agent):
-        set_local_leader(agent, max(local_leader_votes(agent), key=lambda x: len([ leader for leader in local_leader_votes(agent) if leader == x ])))
+    if len(global_leader_votes(agent)) >= ( 4/5 )*get_manet_agent_numbers(agent):
+        set_local_leader(agent, max(global_leader_votes(agent), key=lambda x: len([ leader for leader in global_leader_votes(agent) if leader == x ])))
+        if agent == global_leader(agent):
+            pass # A compléter en fonction du comportement attendu pour global leader
     pass
 
 @receive_and_deal_message.register
 def _(agent, message: Message.ROUTE):
     """Reçoit et traite les messages ROUTE, dont la valeur est un dict tel que {agent: [suceceurs_neighbours]}"""
-    generic({ agent: [set_route,get_route, neighbors, send], message: [value] })
+    generic({ agent: [set_route,get_route, neighbors, send, set_route_predecessor], message: [value] })
     neighbors = agent.neighbors()
     routes = value(message)
-    if len(get_route(agent)) == 0:
-        agent.set_route(routes[agent])
-        for neighbor in neighbors:
-            send(agent, neighbor, message)
+    agent.set_route(routes[agent])
+    agent.set_route_predecessor()
+    for neighbor in neighbors:
+        send(agent, neighbor, message)
+        
+        
     
 @receive_and_deal_message.register
 def _(agent, message: Message.EXECUTE_GLOBAL):
     """Reçoit et traite les messages UPDATE_MEMORY"""
-    generic({ agent: [set_memory, execute] }) # A compléter en fonction du comportement attendu pour agent
+    generic({ agent: [execute] }) # A compléter en fonction du comportement attendu pour agent
+    
     pass
 
 @receive_and_deal_message.register

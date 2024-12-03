@@ -1,9 +1,10 @@
 from interfaces import *
+from interfaces_message import deal_message
 from utils import *
 from messages import *
 from csp import compute_leader, compute_route, execute_order
 
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.BROADCAST_STATUS):
     """Reçoit et traite les messages BROADCAST_STATUS et commence les dépendances locales"""
     generic({ agent: [neighbors, send, add_memory, memory_size,get_memory, del_memory,  get_manet_agent_numbers, \
@@ -31,7 +32,7 @@ def _(agent, message: Message.BROADCAST_STATUS):
 
 
 import interfaces.interfaces_message.execute_local as iel
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.DEPENDANCY):
     """Reçoit et traite les messages DEPENDANCY"""
     generic({ agent: [send, neighbors, add_to_local_dependants], message: [sender] })
@@ -46,13 +47,13 @@ def _(agent, message: Message.DEPENDANCY):
     else:
         send(agent, sender, Message.NACK_DEPENDANCY)
 
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.ACK_DEPENDANCY):
     """Reçoit et traite les messages ACK_DEPENDANCY"""
     generic({ agent: [set_local_leader], message: [sender] })
     agent.set_local_leader(message.sender())
     
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.NACK_DEPENDANCY):
     """Reçoit et traite les messages NACK_DEPENDANCY"""
     generic({ agent: [send, add_to_excluded_agents_from_leader_list, excluded_agents_from_leader_list, neighbors], message: [sender] })
@@ -67,7 +68,7 @@ def _(agent, message: Message.NACK_DEPENDANCY):
     
     
 import interfaces.interfaces_message.execute_local as iel
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.EXECUTE_LOCAL):
     """Reçoit et traite les messages EXECUTE_LOCAL"""
     generic({ agent: [execute] , 
@@ -82,7 +83,7 @@ def _(agent, message: Message.EXECUTE_LOCAL):
     response.set_data(result)
     send(agent, sender, response)
     
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.RESULT_LOCAL):
     """Reçoit et traite les messages RESULT_LOCAL"""
     generic({ agent: [], message: [sender, iel.data, iel.order] })
@@ -95,7 +96,7 @@ def _(agent, message: Message.RESULT_LOCAL):
     
     
 import interfaces.interfaces_message.leader as il
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.BROADCAST_LEADER):
     """Reçoit et traite les messages BROADCAST_LEADER"""
     generic({ agent: [send, neighbors, set_local_leader, global_leader, set_local_leader ,global_leader_votes, \
@@ -115,7 +116,7 @@ def _(agent, message: Message.BROADCAST_LEADER):
 
 
 import interfaces.interfaces_message.route as ir
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.ROUTE):
     """Reçoit et traite les messages ROUTE, dont la valeur est un dict tel que {agent: [suceceurs_neighbours]}"""
     generic({ agent: [set_route,get_route, neighbors, send, set_route_predecessor], message: [sender, ir.route] })
@@ -129,7 +130,7 @@ def _(agent, message: Message.ROUTE):
         
         
 import interfaces.interfaces_message.execute_global as ieg
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.EXECUTE_GLOBAL):
     """Reçoit et traite les messages UPDATE_MEMORY"""
     generic({ agent: [execute, send], message: [ieg.program, ieg.constants] }) 
@@ -141,7 +142,7 @@ def _(agent, message: Message.EXECUTE_GLOBAL):
     agent.send(agent.route_predecessor(), result_message)
     pass
 
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.RESULT_GLOBAL):
     """Reçoit et traite les messages RESULT"""
     generic({ agent: [send] })
@@ -149,7 +150,7 @@ def _(agent, message: Message.RESULT_GLOBAL):
 
 
 import interfaces.interfaces_message.changes as ic
-@receive_and_deal_message.register
+@deal_message.register
 def _(agent, message: Message.CHANGE):
     """Reçoit et traite les messages EXECUTE"""
     generic({ agent: [execute], message: [ic.position, ic.energy] }) # A compléter en fonction du comportement attendu pour agent

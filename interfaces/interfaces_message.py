@@ -5,7 +5,7 @@ from messages import *
 
 # génériques de message
 @singledispatch
-def receive_and_deal_message(agent, message):
+def deal_message(agent, message):
     """Reçoit et traite les messages"""
     pass
 

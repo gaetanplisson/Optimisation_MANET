@@ -100,7 +100,7 @@ def _(agent, message: Message.ROUTE):
     neighbors = agent.neighbors()
     routes = value(message)
     agent.set_route(routes[agent])
-    agent.set_route_predecessor()
+    agent.set_route_predecessor(next([successor for _, successor in routes.keys() if succ]))
     for neighbor in neighbors:
         send(agent, neighbor, message)
         

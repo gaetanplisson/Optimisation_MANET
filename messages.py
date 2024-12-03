@@ -15,7 +15,9 @@ class Message(Enum):
     #Etape 3: Election du leader global
     EXECUTE_LOCAL = 5 # Exécute le programme csp qui permet de déterminer le leader global en minimisant la somme des couts energetiques de transport 
                 # et en maximisant l'energie du leader et de son voisinage.
-    BROADCAST_LEADER = 6 # Envoit à tout le monde le leader global trouvé par le voisinage.
+    RESULT_LOCAL = 6 # Envoit à tout le monde le leader local trouvé par le voisinage.
+    
+    BROADCAST_LEADER = 7 # Envoit à tout le monde le leader global trouvé par le voisinage.
                         # Si un agent reçoit un leader qu'il a déjà dans sa mémoire il ne fait rien.
                         # Chaque agent change son leader global par vote majoritaire.
                         # Si égalité => possibilité de scission du réseau, pas grave, c'est fun.
@@ -23,17 +25,18 @@ class Message(Enum):
     
     #Etape 4: Calcul de la route optimale de transport d'information
     # EXECUTE_LOCAL envoyé aux voisins du leader global par le leader global pour calculer la route optimale
-    ROUTE = 7 # Envoit à tout le monde la route optimale trouvée par le leader global.
+    ROUTE = 8 # Envoit à tout le monde la route optimale trouvée par le leader global.
                         # Pour envoyer cette route, on utilise de proche en proche si il n'y a pas encore de route définie
                         # Ou on utilise la route définie si elle est déjà définie et on la met à jour.
     
     #Etape 5: Ordre de calcul des contraintes du système
-    EXECUTE_GLOBAL = 8 # envoyé à tout les agents du réseau par le leader global pour calculer les contraintes du système
+    EXECUTE_GLOBAL = 9 # envoyé à tout les agents du réseau par le leader global pour calculer les contraintes du système
                         # en suivant la route calculée. On joint au message soit le programme csp et les contraintes à calculer, 
                         # ou dans le cadre de la simulation seulement le coût énergétique du calcul estimé.
+    RESULT_GLOBAL = 10 # Envoit à tout le monde le résultat du calcul des contraintes du système.
     
-    CHANGE = 9 # Envoit à tout le monde le changement de mémoire due à l'execution
+    CHANGE = 11 # Envoit à tout le monde le changement de mémoire due à l'execution
     
-    PING = 10 # Envoit à tout le monde un ping pour vérifier la connectivité et compter les agents
+    PING = 12 # Envoit à tout le monde un ping pour vérifier la connectivité et compter les agents
     
     

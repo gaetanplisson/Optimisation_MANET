@@ -3,12 +3,6 @@ from typing import *
 from functools import *
 from messages import *
 
-# Génériques d'espace de mobilité
-
-@singledispatch
-def move_matrix(self):
-    """Donne la matrice de déplacement de l'espace de mobilité"""
-
 # Génériques d'agents
 
 @singledispatch
@@ -129,20 +123,3 @@ def set_route_predecessor(self):
     
 
     
-# génériques de message
-@singledispatch
-def receive_and_deal_message(agent, message):
-    """Reçoit et traite les messages"""
-    pass
-
-@singledispatch
-def value(self):
-    """Donne la valeur d'un message"""
-
-@singledispatch
-def set_value(self, value):
-    """Met à jour la valeur d'un message"""
-    
-@singledispatch
-def sender(self):
-    """Donne l'envoyeur d'un message"""

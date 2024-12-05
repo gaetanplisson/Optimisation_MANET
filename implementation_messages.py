@@ -2,7 +2,23 @@ from interfaces import *
 from interfaces_message import deal_message
 from utils import *
 from messages import *
-from csp import compute_leader, compute_route, execute_order
+import random
+from csp import compute_leader, compute_route, execute_order, auto_organisation
+
+def send(agent, receiver, message):
+    """Envoie un message"""
+    reorganisation_frequency = 1/100
+    receiver.deal_message(agent, message)
+    if agent == global_leader(agent):
+        if random.random() < reorganisation_frequency:
+            for neighbor in agent.neighbors():
+                message = Message.EXECUTE_GLOBAL()
+                message.set_program(auto_organisation)
+                message.set_constants({})
+                agent.send(neighbor, message)
+        pass 
+
+    pass
 
 @deal_message.register
 def _(agent, message: Message.BROADCAST_STATUS):
@@ -109,9 +125,7 @@ def _(agent, message: Message.BROADCAST_LEADER):
         for neighbor in agent.neighbors():
             send(agent, neighbor, message)
     if len(global_leader_votes(agent)) >= ( 4/5 )*get_manet_agent_numbers(agent):
-        set_local_leader(agent, max(global_leader_votes(agent), key=lambda x: len([ leader for leader in global_leader_votes(agent) if leader == x ])))
-        if agent == global_leader(agent):
-            pass # A compléter en fonction du comportement attendu pour global leader
+        set_global_leader(agent, max(global_leader_votes(agent), key=lambda x: len([ leader for leader in global_leader_votes(agent) if leader == x ])))
     pass
 
 
@@ -146,8 +160,22 @@ def _(agent, message: Message.EXECUTE_GLOBAL):
 def _(agent, message: Message.RESULT_GLOBAL):
     """Reçoit et traite les messages RESULT"""
     generic({ agent: [send] })
-    agent.send(agent.route_predecessor(), message)
-
+    program = message.program()
+    if agent != global_leader(agent):
+        send(agent, agent.route_predecessor(), message)
+        
+    else:
+        if program == compute_route:
+            route = message.data()
+            if route['score'] > agent.route()['score']:
+                agent.set_route(route)
+                change = Message.CHANGE()
+                change.route(route)
+                for route in agent.route().values():
+                    send(agent, route, change)
+        else:
+    
+            pass
 
 import interfaces.interfaces_message.changes as ic
 @deal_message.register
@@ -156,8 +184,12 @@ def _(agent, message: Message.CHANGE):
     generic({ agent: [execute], message: [ic.position, ic.energy] }) # A compléter en fonction du comportement attendu pour agent
     position = message.position()
     energy = message.energy()
+    route = agent.route()
     agent.set_position(position)
     agent.set_energy(energy)
+    agent.set_route(route)
+    for sucessor in agent.route().values():
+        send(agent, sucessor, message)
     
 
 

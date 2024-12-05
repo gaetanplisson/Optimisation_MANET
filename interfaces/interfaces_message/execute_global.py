@@ -21,6 +21,14 @@ def set_constants(self, constants):
     
 # RESULT GLOBAL
 @singledispatch
+def program(self):
+    """Donne l'ordre d'un message"""
+    
+@singledispatch
+def set_program(self, program):
+    """Met à jour l'ordre d'un message"""
+
+@singledispatch
 def data(self):
     """Donne les données d'un message"""
 

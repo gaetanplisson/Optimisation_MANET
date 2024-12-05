@@ -6,7 +6,7 @@ set of int: Agents = 1..num_agents;
 
 % Nombre de positions
 int: num_positions;
-set of int: Positions = 1..num_positions;
+set of var int: Positions = 1..num_positions;
 
 % Matrice de positions
 array[Positions, Positions] of int: Mp;
@@ -30,8 +30,8 @@ array[Agents, Agents] of var int: d;
 var float: E = sum(i, j in Agents)(d[i, j]) / (num_agents * num_agents);
 
 % Faiblesse énergétique d'un agent
-array[Agents] of var float: DeltaE;
-array[Agents] of var int: DeltaN;
+array[Agents] of float: DeltaE;
+array[Agents] of int: DeltaN;
 array[Agents] of var float: f;
 
 % Contraintes pour définir n

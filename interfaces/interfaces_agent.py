@@ -3,6 +3,16 @@ from typing import *
 from functools import *
 from messages import *
 
+# Génériques d'espace
+
+@singledispatch
+def positions(self):
+    """Donne les positions possibles"""
+    
+@singledispatch
+def graph_matgrix(self):
+    """Donne le graphe des positions possibles"""
+
 # Génériques d'agents
 
 @singledispatch
@@ -12,6 +22,10 @@ def position(self):
 @singledispatch
 def set_position(self, position):
     """Déplace un objet"""
+    
+@singledispatch
+def position_graph(self):
+    """Donne la position d'un objet sous forme de graphe"""
     
 @singledispatch
 def energy(self):
@@ -29,10 +43,7 @@ def neighbors(self):
 def execute(self, csp_program, constants):
     """Exécute un programme csp"""    
 
-@singledispatch
-def send(self, receiver, message):
-    """Envoie un message"""
-    
+
 @singledispatch
 def get_memory(self):
     """Donne la mémoire d'un agent sous forme de dictionnaire
